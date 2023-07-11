@@ -1,6 +1,5 @@
 import { FileBlob } from "bun"
 import { v2 as cloudinary } from "cloudinary"
-import * as fs from "fs"
 const PORT = process.env.PORT || 3000
 const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env
 cloudinary.config({

@@ -12,15 +12,12 @@ cloudinary.config({
 const server = Bun.serve({
   port: PORT,
   fetch: async(request)=> {
-    console.log("Received")
     const form_data = await request.formData()
     const file = form_data.get('file') as FileBlob
     const file_extension = file.type.split("/")[1]
-    console.log(file_extension)
     const media_id = crypto.randomUUID()
     const file_name = `${media_id}.${file_extension}`
     await Bun.write(file_name, file)
-    console.log("Finished")
     return new Response();
   },
 });

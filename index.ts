@@ -1,29 +1,36 @@
+import { writeFileSync, readFileSync, unlinkSync } from "fs"
 import { FileBlob } from "bun"
-import * as fs from "fs"
+import Imagekit from "imagekit"
+import { IMAGEKIT_PRIVATE_KEY, IMAGEKIT_PUBLIC_KEY, IMAGEKIT_URL_ENDPOINT} from "./config"
 const PORT = process.env.PORT || 3000
+const imagekit = new Imagekit({
+  publicKey:IMAGEKIT_PUBLIC_KEY,
+  privateKey:IMAGEKIT_PRIVATE_KEY,
+  urlEndpoint:IMAGEKIT_URL_ENDPOINT
+})
+
 const server = Bun.serve({
     port: PORT,
     fetch: async (request) => {
+      try {
         const form_data = await request.formData()
-        const file = form_data.get('file') as FileBlob
-        const file_extension = file.type.split("/")[1]
+        const file_extension = form_data.get('file_extension')! as string
+        const file_data = form_data.get('file_data')! as FileBlob
         const media_id = crypto.randomUUID()
-        const file_name = `${media_id}.${file_extension}`
-        const file_data = await file.arrayBuffer()
-        fs.writeFile(file_name, file_data, (err) => {
-            if (err) {
-                console.log("Error writting file")
-                console.log(err)
-                return new Response()
-            }
+        const fileName = `${media_id}.${file_extension}`
+        writeFileSync(fileName, Buffer.from(await file_data.arrayBuffer()))
+        const file = readFileSync(fileName).toString('base64')
+        const { url } = await imagekit.upload({
+          file,
+          fileName
         })
-        try {
-            return new Response()
-        } catch (error) {
-            console.log("Error uploading to cloudinary ")
-            console.log(error)
-            return new Response("", { status: 500 });
-        }
+        unlinkSync(fileName)
+        return new Response(JSON.stringify({url}))
+      } catch (err) {
+        console.log('Error while handling file upload')
+        console.log(err)
+        return new Response("", { status:500})
+      }
     },
 });
 

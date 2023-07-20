@@ -2,7 +2,6 @@ import { writeFileSync, readFileSync, unlinkSync } from "fs"
 import { FileBlob } from "bun"
 import Imagekit from "imagekit"
 import { IMAGEKIT_PRIVATE_KEY, IMAGEKIT_PUBLIC_KEY, IMAGEKIT_URL_ENDPOINT} from "./config"
-const PORT = process.env.PORT || 3000
 const imagekit = new Imagekit({
   publicKey:IMAGEKIT_PUBLIC_KEY,
   privateKey:IMAGEKIT_PRIVATE_KEY,
@@ -10,7 +9,7 @@ const imagekit = new Imagekit({
 })
 
 const server = Bun.serve({
-    port: PORT,
+    port: 8080,
     fetch: async (request) => {
       try {
         const form_data = await request.formData()

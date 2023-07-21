@@ -26,7 +26,8 @@ const server = Bun.serve({
         unlinkSync(fileName)
         return new Response(JSON.stringify({url}))
       } catch (err) {
-        console.log('Error while handling file upload')
+        const now = new Date()
+        console.log(`${now} :: Error while handling file upload`)
         console.log(err)
         return new Response("", { status:500})
       }

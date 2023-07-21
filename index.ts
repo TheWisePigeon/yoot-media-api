@@ -11,6 +11,11 @@ const imagekit = new Imagekit({
 const server = Bun.serve({
     port: 8080,
     fetch: async (request) => {
+      const url = new URL(request.url)
+      const { pathname } = url
+      if(pathname.includes("is_up")){
+        return new Response()
+      }
       try {
         const form_data = await request.formData()
         const file_extension = form_data.get('file_extension')! as string
